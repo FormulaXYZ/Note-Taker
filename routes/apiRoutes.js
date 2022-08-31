@@ -4,15 +4,15 @@ const util = require('util');
 
 // Promise version of fs.readFile
 const readFromFile = util.promisify(fs.readFile);
-/**
+const writeFile = util.promisify(fs.writeFile);
+  /** 
  *  Function to write data to the JSON file given a destination and some content
  *  @param {string} destination The file you want to write to.
  *  @param {object} content The content you want to write to the file.
  *  @returns {void} Nothing
  */
 const writeToFile = (destination, content) =>
-  fs.writeFile(destination, JSON.stringify(content, null, 4), (err) =>
-    err ? console.error(err) : console.info(`\nData written to ${destination}`)
+  writeFile(destination, JSON.stringify(content, null, 4)
   );
 /**
  *  Function to read data from a given a file and append some content
@@ -38,7 +38,18 @@ router.get('/notes', (req, res) =>{
 
 });
 
+router.post('/notes', (req, res) =>{ 
+  console.log(req.body);
+  readFromFile("./db/db.json").then(data => {
+    const dataArr = JSON.parse(data)
+    dataArr.push(req.body);
+    writeToFile('./db/db.json',dataArr).then( ()=> {
+      return res.json(dataArr);
 
+    })
+  
+   })
+});
  
 
 
